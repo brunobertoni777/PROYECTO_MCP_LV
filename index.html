@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Las Varillas · ¿cómo puedo ayudarte?</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--blue:#0099ff;--yellow:#ffcc00;--ink:#111}
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;overflow:hidden}
+  body{font-family:Poppins,system-ui,sans-serif;background:var(--yellow);color:var(--ink)}
+
+  /* 1. Fondo principal con la onda (fondo-las-varillas.svg) */
+  .bg-onda {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      pointer-events: none;
+  }
+
+  /* 2. Logo superior izquierdo (v-ave.svg) */
+  .logo {
+    position: fixed;
+    left: 2.7vw;
+    top: 5.5vh;
+    width: 21vw;
+    z-index: 4;
+    pointer-events: none;
+}
+
+  /* 3. Engranaje decorativo izquierdo (engranaje.svg) */
+  .bg-engranaje {
+    position: fixed;
+    left: 3.8vw;
+    top: 5.2vh;
+    width: 8vw;
+    z-index: 3;        /* detrás de la V (4) y del buscador (5) */
+    pointer-events: none;
+}
+  /* Buscador central ajustado */
+  .pill{position:fixed;left:15.2vw;top:9.6vh;width:51vw;height:max(56px,11.5vh);z-index:5;display:flex;align-items:center;gap:18px;padding:0 3vw 0 2.2vw;background:#fff;border-radius:40px;box-shadow:0 6px 20px rgba(0,80,140,.35)}  .pill input{flex:1;min-width:0;border:0;outline:0;font:inherit;font-size:1.15rem;color:var(--ink);background:none}
+  .pill input::placeholder{color:#555;opacity:1}
+  .dot{width:10px;height:10px;border-radius:50%;background:#bbb;flex-shrink:0}.dot.ok{background:#22c55e}
+
+  /* Respuesta del chat */
+  .answer{position:fixed;left:15.2vw;top:calc(9.6vh + max(56px,11.5vh) + 14px);width:51vw;max-height:calc(100vh - 220px);overflow-y:auto;z-index:5;background:rgba(255,255,255,.96);border-radius:26px;padding:20px 26px;box-shadow:0 10px 25px rgba(0,0,0,0.2);white-space:pre-wrap;line-height:1.6;font-size:.98rem;display:none}  .answer small{display:block;color:#0090c5;font-weight:600;margin-bottom:6px}
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid var(--blue);border-top-color:transparent;border-radius:50%;animation:r .8s linear infinite;margin-right:8px;vertical-align:-2px}
+  @keyframes r{to{transform:rotate(360deg)}}
+
+  /* Menú inferior derecho idéntico a la foto */
+  #nav{position:fixed;right:40px;bottom:25px;z-index:40;display:flex;flex-direction:column;text-align:right}
+  #nav ul{list-style:none;margin:0;padding:0}
+  #nav li{margin:2px 0}
+  #nav li button{cursor:pointer;font:inherit;background:none;border:0;padding:0;text-decoration:none;display:inline-block}
+  #nav li button.l{font-size:0.95rem;color:#111;font-weight:600}
+  #nav li button.l::before{content:"• ";margin-right:4px}
+  #nav li button.h{font-weight:700;color:var(--blue);text-transform:uppercase;font-size:0.95rem;letter-spacing:0.05em}
+  #nav li button.act{text-decoration:underline;text-underline-offset:4px}
+  #nav .bar{display:none}
+
+  /* Fondo borroso + panel centrado */
+  #ov{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:30px 30px 110px;background:rgba(255,255,255,.18);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  #ov.on{display:flex;animation:f .3s}
+  @keyframes f{from{opacity:0}}
+  .panel{width:min(900px,100%);max-height:100%;overflow-y:auto;background:rgba(255,255,255,.93);border-radius:30px;padding:30px 34px;box-shadow:0 20px 50px rgba(0,50,90,.35)}
+  .panel h2{margin:0 0 4px;font-size:1.6rem}
+  .panel .sub{color:#0090c5;font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;margin-bottom:22px}
+  .shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:20px}
+  .book{cursor:pointer;border:0;text-align:left;font:inherit;padding:0;border-radius:6px 14px 14px 6px;overflow:hidden;box-shadow:5px 7px 0 rgba(0,0,0,.14);transition:.2s;min-height:230px;display:flex;flex-direction:column;border-left:14px solid rgba(0,0,0,.18)}
+  .book:hover{transform:translateY(-6px) rotate(-1deg)}
+  .book .t{flex:1;padding:18px 14px;font-weight:700;font-size:1rem;line-height:1.3}
+  .book .c{padding:10px 14px;font-size:.7rem;font-weight:600;background:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.06em}
+  .b0{background:var(--blue);color:#fff}.b1{background:var(--yellow)}.b2{background:#fff;border:1px solid #ddd;border-left:14px solid var(--blue)}.b3{background:#222;color:#fff}
+  .back{border:0;background:none;color:#0090c5;font:inherit;font-weight:600;cursor:pointer;margin-bottom:14px;padding:0}
+  .reader p{line-height:1.8;font-size:1.02rem;white-space:pre-wrap}
+  .tags span{display:inline-block;font-size:.72rem;background:#e8f7fd;color:#007aa8;border-radius:99px;padding:3px 11px;margin:0 6px 6px 0}
+  .hist{display:flex;flex-direction:column;gap:12px}
+  .m{max-width:84%;padding:11px 16px;border-radius:20px;white-space:pre-wrap;line-height:1.55;font-size:.94rem}
+  .m.u{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:4px}
+  .m.a{align-self:flex-start;background:#fff4cc;border-bottom-left-radius:4px}
+  .empty{color:#666;text-align:center;padding:30px}
+  .banner{background:#fff4cc;border-radius:12px;padding:8px 14px;font-size:.8rem;margin-bottom:16px}
+
+  @media(max-width:700px){
+    .logo{width:38vw;left:4vw;top:2vh}
+    .bg-engranaje{width:14.5vw;left:6.5vw;top:1.6vh}
+    .pill{left:4vw;width:92vw;top:14vh}
+    .answer{left:4vw;width:92vw;top:calc(14vh + 70px)}
+}
+</style>
+</head>
+<body>
+
+<!-- 1. Imagen de fondo principal (Onda) desde la carpeta assets -->
+<img src="./assets/fondo-las-varillas.svg" alt="Fondo Las Varillas" class="bg-onda">
+
+<!-- 2. Engranaje decorativo izquierdo desde la carpeta assets -->
+<img src="assets/engranaje.svg" alt="Engranaje" class="bg-engranaje">
+
+<!-- 3. Logo superior izquierdo desde la carpeta assets -->
+<img src="assets/v-ave.svg" alt="Logo V-Ave" class="logo">
+
+<!-- Buscador -->
+<form class="pill" id="form">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#6b6b6b" stroke-width="2.5" stroke-linecap="round"><circle cx="10" cy="10" r="6.5"/><path d="M15 15l6 6"/></svg>
+  <input id="inp" type="text" placeholder="¿cómo puedo ayudarte…?" autocomplete="off" autofocus>
+  <span class="dot" id="dot" title="Estado del servidor"></span>
+</form>
+<div class="answer" id="answer"></div>
+
+<!-- Menú inferior derecho -->
+<nav id="nav">
+  <ul>
+    <li><button type="button" class="l" id="goLibros">Libros, Las Varillas</button></li>
+    <li><button type="button" class="h" id="goChat">HISTORIAL DE CHAT</button></li>
+  </ul>
+</nav>
+
+<!-- Overlay borroso -->
+<div id="ov"><div class="panel" id="panel"></div></div>
+
+<script>
+const WS_URL = (location.protocol === "https:" ? "wss://" : "ws://") + location.host + "/ws/chat";
+const API = "/api/fundacion";
+const $ = id => document.getElementById(id);
+
+let libros = [], offline = true;
+const hist = [];
+let ws, busy = false, vista = null;
+
+/* ---------- Menú y overlay ---------- */
+$("goLibros").onclick = () => abrir("libros");
+$("goChat").onclick = () => abrir("chat");
+$("ov").onclick = e => { if (e.target === $("ov")) cerrar(); };
+document.addEventListener("keydown", e => { if (e.key === "Escape") cerrar(); });
+
+function abrir(v){
+  if (vista === v) return cerrar();
+  vista = v; $("ov").classList.add("on");
+  $("goLibros").classList.toggle("act", v === "libros"); $("goChat").classList.toggle("act", v === "chat");
+  v === "libros" ? pintarLibros() : pintarHist();
+}
+function cerrar(){ vista = null; $("ov").classList.remove("on"); $("goLibros").classList.remove("act"); $("goChat").classList.remove("act"); }
+function el(tag, cls, txt){ const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+
+function pintarLibros(){
+  const p = $("panel"); p.innerHTML = "";
+  p.append(el("h2", "", "Libros, Las Varillas"), el("div", "sub", "Biblioteca histórica digital"));
+  if (offline) p.append(el("div", "banner", "Sin conexión con el servidor: no se pudieron cargar los libros."));
+  const shelf = el("div", "shelf");
+  libros.forEach((d, i) => {
+    const b = el("button", "book b" + (i % 4));
+    b.append(el("div", "t", d.titulo), el("div", "c", (d.metadata && d.metadata.criterio) || "Documento"));
+    b.onclick = () => leer(d);
+    shelf.append(b);
+  });
+  if (!libros.length) shelf.append(el("div", "empty", "No hay libros para mostrar."));
+  p.append(shelf);
+}
+function leer(d){
+  const p = $("panel"); p.innerHTML = "";
+  const back = el("button", "back", "← Volver a los libros"); back.onclick = pintarLibros;
+  const r = el("div", "reader");
+  const tags = el("div", "tags"); (d.tags || []).forEach(t => tags.append(el("span", "", t)));
+  r.append(el("h2", "", d.titulo), el("div", "sub", (d.metadata && d.metadata.criterio) || ""), el("p", "", d.contenido), tags);
+  p.append(back, r);
+}
+function pintarHist(){
+  const p = $("panel"); p.innerHTML = "";
+  p.append(el("h2", "", "Historial de chat"), el("div", "sub", "Libros, Las Varillas"));
+  if (!hist.length) { p.append(el("div", "empty", "Todavía no hiciste ninguna pregunta. Escribí arriba en el buscador.")); return; }
+  const h = el("div", "hist"); hist.forEach(m => h.append(el("div", "m " + m.r, m.t))); p.append(h);
+}
+
+/* ---------- Respuesta ---------- */
+function mostrar(pregunta, html, esEstado){
+  const a = $("answer"); a.style.display = "block"; a.innerHTML = "";
+  a.append(el("small", "", pregunta));
+  if (esEstado) { const s = el("span", "spin"); a.append(s, document.createTextNode(html)); }
+  else a.append(document.createTextNode(html));
+  a.scrollTop = 0;
+}
+let ultima = "";
+
+/* ---------- Conexión ---------- */
+async function cargar(){
+  try { const r = await fetch(API); if (!r.ok) throw 0; libros = (await r.json()).raw; offline = false; } catch { offline = true; }
+}
+function conectar(){
+  ws = new WebSocket(WS_URL);
+  ws.onopen = () => $("dot").classList.add("ok");
+  ws.onmessage = e => {
+    const m = JSON.parse(e.data);
+    if (m.type === "status") return mostrar(ultima, m.message, true);
+    const txt = m.type === "error" ? "Error: " + m.message : m.content;
+    mostrar(ultima, txt); hist.push({r: "a", t: txt}); busy = false;
+    if (vista === "chat") pintarHist();
+  };
+  ws.onclose = () => { $("dot").classList.remove("ok"); busy = false; setTimeout(conectar, 3000); };
+}
+$("form").addEventListener("submit", e => {
+  e.preventDefault();
+  const t = $("inp").value.trim(); if (!t || busy) return;
+  if (!ws || ws.readyState !== WebSocket.OPEN){ mostrar(t, "El servidor no está disponible. Inicia el backend (python main.py) y Ollama."); return; }
+  ultima = t; busy = true; hist.push({r: "u", t});
+  mostrar(t, "Enviando mensaje...", true);
+  ws.send(JSON.stringify({text: t})); $("inp").value = "";
+  if (vista === "chat") pintarHist();
+});
+
+cargar(); conectar();
+</script>
+</body>
+</html>
